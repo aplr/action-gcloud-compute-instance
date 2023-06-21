@@ -15,7 +15,16 @@
   },
   "rules": {
     "i18n-text/no-en": "off",
-    "import/no-namespace": "off"
+    "import/no-namespace": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error", // or "error"
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ]
   },
   // "rules": {
   //   "eslint-comments/no-use": "off",

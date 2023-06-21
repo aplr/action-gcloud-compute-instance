@@ -30,18 +30,21 @@ interface GcloudConfig {
 
 export async function getConfig(): Promise<Config> {
   const defaultsFromGcloud = await getDefaultsFromGcloud()
+  const actionInputs = Object.fromEntries(
+    Object.entries(getActionInputs()).filter(([_, v]) => v !== undefined),
+  )
 
   const config = {
     ...defaultsFromGcloud,
-    ...getActionInputs(),
+    ...actionInputs,
   }
 
   return await configSchema.parseAsync(config)
 }
 
-async function getActionInputs(): Promise<Partial<Config>> {
+function getActionInputs(): Partial<Config> {
   return {
-    namePrefix: core.getInput("name-prefix", { required: true }),
+    namePrefix: core.getInput("name_prefix", { required: true }),
     project: core.getInput("project_id", { required: false }) ?? undefined,
     zone: core.getInput("zone", { required: false }) ?? undefined,
     sourceInstanceTemplate: core.getInput("source_instance_template", {

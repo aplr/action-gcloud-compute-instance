@@ -44422,27 +44422,26 @@ const configSchema = zod_1.default.object({
 function getConfig() {
     return __awaiter(this, void 0, void 0, function* () {
         const defaultsFromGcloud = yield getDefaultsFromGcloud();
-        const config = Object.assign(Object.assign({}, defaultsFromGcloud), getActionInputs());
+        const actionInputs = Object.fromEntries(Object.entries(getActionInputs()).filter(([_, v]) => v !== undefined));
+        const config = Object.assign(Object.assign({}, defaultsFromGcloud), actionInputs);
         return yield configSchema.parseAsync(config);
     });
 }
 exports.getConfig = getConfig;
 function getActionInputs() {
     var _a, _b, _c;
-    return __awaiter(this, void 0, void 0, function* () {
-        return {
-            namePrefix: core.getInput("name-prefix", { required: true }),
-            project: (_a = core.getInput("project_id", { required: false })) !== null && _a !== void 0 ? _a : undefined,
-            zone: (_b = core.getInput("zone", { required: false })) !== null && _b !== void 0 ? _b : undefined,
-            sourceInstanceTemplate: core.getInput("source_instance_template", {
-                required: true,
-            }),
-            autoDelete: (_c = core.getBooleanInput("auto_delete", { required: false })) !== null && _c !== void 0 ? _c : undefined,
-            // waitForInstance: core.getBooleanInput("wait_for_instance", {
-            //   required: false,
-            // }),
-        };
-    });
+    return {
+        namePrefix: core.getInput("name_prefix", { required: true }),
+        project: (_a = core.getInput("project_id", { required: false })) !== null && _a !== void 0 ? _a : undefined,
+        zone: (_b = core.getInput("zone", { required: false })) !== null && _b !== void 0 ? _b : undefined,
+        sourceInstanceTemplate: core.getInput("source_instance_template", {
+            required: true,
+        }),
+        autoDelete: (_c = core.getBooleanInput("auto_delete", { required: false })) !== null && _c !== void 0 ? _c : undefined,
+        // waitForInstance: core.getBooleanInput("wait_for_instance", {
+        //   required: false,
+        // }),
+    };
 }
 function getDefaultsFromGcloud() {
     var _a, _b;
@@ -44757,7 +44756,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.1","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","jest":"29.5.0","js-yaml":"4.1.0","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3"}}');
+module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.2","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","jest":"29.5.0","js-yaml":"4.1.0","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3"}}');
 
 /***/ })
 
