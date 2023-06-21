@@ -1,6 +1,9 @@
 name: Create Google Compute Engine VM
 description: Creates an on-demand Google Cloud Compute Engine VM instance.
 author: 'Andreas Pfurtscheller'
+branding:
+  color: blue
+  icon: server
 inputs:
   name_prefix:
     description: |-
