@@ -43,8 +43,14 @@ jobs:
           workload_identity_provider: "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider"
           service_account: "my-service-account@my-project.iam.gserviceaccount.com"
 
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: ">= 363.0.0"
+          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
+
       - id: "gce_instance"
-        uses: "aplr/action-gcloud-compute-instance@v0.0.5"
+        uses: "aplr/action-gcloud-compute-instance@v0.0.6"
         with:
           name_prefix: "my-instance"
           source_instance_template: "my-template"
@@ -53,6 +59,96 @@ jobs:
 
       - name: "Use output"
         run: 'curl "${{ steps.gce_instance.outputs.instance_ip }}"'
+```
+
+## Examples
+
+**Create a VM from an existing instance template for distributed, multi-architecture docker builds**
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    services:
+      buildkit:
+        image: ghcr.io/fruitsco/buildkit:latest
+        options: --privileged
+        credentials:
+          username: ${{ github.actor }}
+          # GITHUB_TOKEN does not work, create a Personal Access Token with `read:packages` scope
+          password: ${{ secrets.GITHUB_PAT }}
+        ports:
+          - 1234:1234
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Google Cloud
+        id: gcloud_auth
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ secrets.GCLOUD_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: ">= 363.0.0"
+          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
+
+      - name: Provision buildkit node
+        id: gce_instance
+        uses: "aplr/action-gcloud-compute-instance@v0.0.6"
+        with:
+          name_prefix: buildkit-node-gh
+          zone: europe-west4-a
+          source_instance_template: buildkit-arm
+          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver: remote
+          endpoint: tcp://localhost:1234
+          platforms: linux/amd64
+          driver-opts: servername=localhost
+          append: |
+            - endpoint: tcp://${{ steps.gce_instance.outputs.instance_ip }}:1234
+              platforms: linux/arm64
+              driver-opts:
+                - servername=localhost
+        env:
+          BUILDER_NODE_0_AUTH_TLS_CACERT: ${{ secrets.BUILDKIT_TLS_CA_CERT }}
+          BUILDER_NODE_0_AUTH_TLS_CERT: ${{ secrets.BUILDKIT_TLS_CLIENT_CERT }}
+          BUILDER_NODE_0_AUTH_TLS_KEY: ${{ secrets.BUILDKIT_TLS_CLIENT_KEY }}
+          BUILDER_NODE_1_AUTH_TLS_CACERT: ${{ secrets.BUILDKIT_TLS_CA_CERT }}
+          BUILDER_NODE_1_AUTH_TLS_CERT: ${{ secrets.BUILDKIT_TLS_CLIENT_CERT }}
+          BUILDER_NODE_1_AUTH_TLS_KEY: ${{ secrets.BUILDKIT_TLS_CLIENT_KEY }}
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.GITHUB_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.GITHUB_IMAGE_NAME }}
+
+      - name: Build and push client
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 ```
 
 ## Inputs
