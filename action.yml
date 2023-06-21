@@ -1,11 +1,45 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: Create Google Compute Engine VM
+description: Creates an on-demand Google Cloud Compute Engine VM instance.
+author: 'Andreas Pfurtscheller'
 inputs:
-  milliseconds: # change this
+  name_prefix:
+    description: |-
+      Prefix for the name of the VM. The name will be suffixed
+      with information retrieved from the current github actions
+      run context to ensure uniqueness.
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  project_id:
+    description: |-
+      ID of the Google Cloud project. If provided, this project
+      will be used to create the VM. Otherwise, the default project
+      configured with the gcloud CLI will be used. If no default
+      project is configured, the action will fail.
+    required: false
+  zone:
+    description: |-
+      Zone in which the VM should be created. If not provided,
+      the zone configured with the gcloud CLI will be used. If
+      no zone is configured, the action will fail.
+    required: false
+  source_instance_template:
+    description: |-
+      Name or pattern of the instance template to use for creating the VM.
+      It has to exist in the same project as the VM prior to running this action.
+    required: true
+  auto_delete:
+    description: |-
+      Whether the VM should be deleted automatically after the
+      current github actions run finishes.
+    required: false
+    default: "true"
+  # wait_for_instance:
+  #   description: |-
+  #     Whether the action should wait for the VM to be in the RUNNING
+  #     state before finishing. If set to false, the action will finish
+  #     as soon as the VM is created.
+  #   required: false
+  #   default: "true"
 runs:
   using: 'node16'
-  main: 'dist/index.js'
+  main: 'dist/main/index.js'
+  post: 'dist/post/index.js'
