@@ -5,7 +5,7 @@ The `action-gcloud-compute-instance` GitHub Action provisions a Google
 instance name as well as it's IP is available as a GitHub Actions output
 for use in future steps.
 
-> Currently, this action can create instances only from existing instance templates,
+> Currently, this action can create instances only from existing instance templates.
 > However, this can be extended to creating arbitrary instances in future releases.
 
 ## Use Cases
