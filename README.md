@@ -1,11 +1,18 @@
 # action-gcloud-compute-instance
 
 The `action-gcloud-compute-instance` GitHub Action provisions a Google
-[Compute Engine][compute-engine] instance. Currently, it can create instances
-only from existing instance templates, however, this can be extended to
-arbitrary instances in the future. After successful provisioning, the
+[Compute Engine][compute-engine] instance. After successful provisioning, the
 instance name as well as it's IP is available as a GitHub Actions output
 for use in future steps.
+
+> Currently, it can create instances only from existing instance templates,
+> However, this can be extended to creating arbitrary instances in future releases.
+
+## Use Cases
+
+This action was initially created to boot on-demand ARM-based VMs for running
+distributed, multi-architecture docker `buildx` builds. However, it can be used
+for any case that requires provisioning a VM on-demand in a GitHub Actions workflow.
 
 ## Prerequisites
 
