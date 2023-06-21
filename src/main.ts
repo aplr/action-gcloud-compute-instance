@@ -13,6 +13,12 @@ import { createInstance, getInstanceTemplateUrl } from "./compute"
 const { version: appVersion } = require("../package.json")
 
 async function ensureGcloud(): Promise<void> {
+  if (!gcloud.isInstalled()) {
+    throw new Error(
+      "Google Cloud SDK is not installed. Install it using @google-github-actions/setup-gcloud.",
+    )
+  }
+
   const authenticated = await gcloud.isAuthenticated()
   if (!authenticated) {
     throw new Error(
