@@ -17,7 +17,7 @@ export async function getInstanceTemplateUrl(
     "--project",
     project,
     "--filter",
-    `"name~'${pattern}'"`,
+    `name~'${pattern}'`,
     "--uri",
   ])
 
