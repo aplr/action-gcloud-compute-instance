@@ -44515,6 +44515,9 @@ const compute_1 = __nccwpck_require__(2294);
 const { version: appVersion } = __nccwpck_require__(4147);
 function ensureGcloud() {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!gcloud.isInstalled()) {
+            throw new Error("Google Cloud SDK is not installed. Install it using @google-github-actions/setup-gcloud.");
+        }
         const authenticated = yield gcloud.isAuthenticated();
         if (!authenticated) {
             throw new Error("Not authenticated with Google Cloud Platform. Authenticate using @google-github-actions/auth.");
@@ -44759,7 +44762,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.3","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","jest":"29.5.0","js-yaml":"4.1.0","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3"}}');
+module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.3","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test","prepare":"husky install"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","jest":"29.5.0","js-yaml":"4.1.0","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3","husky":"^8.0.0"}}');
 
 /***/ })
 
