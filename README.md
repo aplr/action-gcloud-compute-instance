@@ -1,109 +1,163 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# action-gcloud-compute-instance
 
-# Create a JavaScript Action using TypeScript
+The `action-gcloud-compute-instance` GitHub Action provisions a Google
+[Compute Engine][cloud-run] instance. Currently, it can create instances
+only from existing instance templates, however, this can be extended to
+arbitrary instances in the future. After successful provisioning, the
+instance name as well as it's IP is available as a GitHub Actions output
+for use in future steps.
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
+## Prerequisites
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.
+- This action requires Google Cloud credentials that are authorized to access
+  the secrets being requested. See [Authorization](#authorization) for more
+  information.
 
-If you are new, there's also a simpler introduction. See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+- This action runs using Node 16. If you are using self-hosted GitHub Actions
+  runners, you must use runner version
+  [2.285.0](https://github.com/actions/virtual-environments) or newer.
 
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Main
-
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
-
-Install the dependencies
-
-```bash
-$ npm install
-```
-
-Build the typescript and package it for distribution
-
-```bash
-$ npm run build && npm run package
-```
-
-Run the tests :heavy_check_mark:
-
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try {
-      ...
-  }
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder.
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket:
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+## Usage
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+jobs:
+  job_id:
+    # ...
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - uses: "actions/checkout@v3"
+
+      - uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider"
+          service_account: "my-service-account@my-project.iam.gserviceaccount.com"
+
+      - id: "gce_instance"
+        uses: "aplr/action-gcloud-compute-instance@v0.0.5"
+        with:
+          name_prefix: "my-instance"
+          source_instance_template: "my-template"
+          zone: "us-central1-a"
+          project: "my-project"
+
+      - name: "Use output"
+        run: 'curl "${{ steps.gce_instance.outputs.instance_ip }}"'
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+## Inputs
 
-## Usage:
+- `name_prefix`: (Required) Prefix for the name of the VM.
+  The name will be suffixed with information retrieved from the current
+  github actions run context to ensure uniqueness.
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+- `project_id`: (Optional) ID of the Google Cloud project in which to deploy
+  the service. The default value is computed from the environment.
+
+- `zone`: (Optional) Zone in which to deploy the service. The default value
+  is computed from the environment.
+
+- `source_instance_template`: (Required) Name or pattern of the instance template
+  to use for creating the VM. It has to exist in the same project as the VM prior
+  to running this action.
+
+- `auto_delete`: (Optional) Whether to automatically delete the instance when
+  the action finishes. The default value is `true`.
+
+## Outputs
+
+- `instance_ip`: The IP address of the created instance.
+- `instance_name`: The name of the created instance.
+
+## Authorization
+
+There are a few ways to authenticate this action. The caller must have
+permissions to access the secrets being requested.
+
+You will need to authenticate to Google Cloud as a service account with the
+following roles:
+
+- Compute Admin (`roles/compute.admin`):
+  - Full control of all Compute Engine resources.
+
+This service account needs to be a member of the `Compute Engine default service account`,
+`(PROJECT_NUMBER-compute@developer.gserviceaccount.com)`, with role
+`Service Account User`. To grant a user permissions for a service account, use
+one of the methods found in [Configuring Ownership and access to a service account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_user_for_a_service_account).
+
+### Via google-github-actions/auth
+
+Use [google-github-actions/auth](https://github.com/google-github-actions/auth)
+to authenticate the action. You can use [Workload Identity Federation][wif] or
+traditional [Service Account Key JSON][sa] authentication.
+
+```yaml
+jobs:
+  job_id:
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      # ...
+
+      - uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider"
+          service_account: "my-service-account@my-project.iam.gserviceaccount.com"
+
+      - uses: "aplr/action-gcloud-compute-instance@v0.0.5"
+        with:
+          name_prefix: "my-instance"
+          source_instance_template: "my-template"
+```
+
+### Via Application Default Credentials
+
+If you are hosting your own runners, **and** those runners are on Google Cloud,
+you can leverage the Application Default Credentials of the instance. This will
+authenticate requests as the service account attached to the instance. **This
+only works using a custom runner hosted on GCP.**
+
+```yaml
+jobs:
+  job_id:
+    steps:
+      # ...
+
+      - uses: "aplr/action-gcloud-compute-instance@v0.0.5"
+        with:
+          name_prefix: "my-instance"
+          source_instance_template: "my-template"
+```
+
+The action will automatically detect and use the Application Default
+Credentials.
+
+## Versioning
+
+We recommend pinning to the latest available major version:
+
+```yaml
+- uses: "aplr/action-gcloud-compute-instance@v0"
+```
+
+While this action attempts to follow semantic versioning, but we're ultimately
+human and sometimes make mistakes. To prevent accidental breaking changes, you
+can also pin to a specific version:
+
+```yaml
+- uses: "aplr/action-gcloud-compute-instance@v0.0.5"
+```
+
+However, you will not get automatic security updates or new features without
+explicitly updating your version number. Note that we only publish `MAJOR` and
+`MAJOR.MINOR.PATCH` versions. There is **not** a floating alias for
+`MAJOR.MINOR`.
+
+[compute-engine]: https://cloud.google.com/compute
+[sa]: https://cloud.google.com/iam/docs/creating-managing-service-accounts
+[wif]: https://cloud.google.com/iam/docs/workload-identity-federation
