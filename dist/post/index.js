@@ -33407,7 +33407,7 @@ function getInstanceTemplateUrl(pattern, project) {
             "--project",
             project,
             "--filter",
-            `"name~'${pattern}'"`,
+            `name~'${pattern}'`,
             "--uri",
         ]);
         core.info(`Found uris: ${JSON.stringify(uris)}.`);
