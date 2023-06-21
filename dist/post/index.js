@@ -33462,6 +33462,7 @@ function deleteInstance(state) {
             state.project,
             "--zone",
             state.zone,
+            "--quiet",
         ]);
     });
 }

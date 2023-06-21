@@ -79,5 +79,6 @@ export async function deleteInstance(state: Instance): Promise<void> {
     state.project,
     "--zone",
     state.zone,
+    "--quiet",
   ])
 }
