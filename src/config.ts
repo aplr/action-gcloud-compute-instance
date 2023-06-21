@@ -10,8 +10,8 @@ const configSchema = zod.object({
     .regex(/^[a-z0-9]([-_a-z0-9]*)?$/)
     .min(3)
     .max(24),
-  zone: zod.string(),
-  project: zod.string(),
+  zone: zod.string().nonempty(),
+  project: zod.string().nonempty(),
   sourceInstanceTemplate: zod.string(),
   autoDelete: zod.boolean().optional().default(true),
   // waitForInstance: zod.boolean().optional().default(true),

@@ -33395,9 +33395,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deleteInstance = exports.createInstance = exports.getInstanceTemplateUrl = void 0;
+const core = __importStar(__nccwpck_require__(186));
 const gcloud = __importStar(__nccwpck_require__(149));
 function getInstanceTemplateUrl(pattern, project) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.info(`Looking for instance template '${pattern}'`);
         const uris = yield gcloud.gcloudRunJSON([
             "compute",
             "instance-templates",
@@ -33411,6 +33413,7 @@ function getInstanceTemplateUrl(pattern, project) {
         if (uris.length === 0) {
             throw new Error("No instance templates found");
         }
+        core.info(`Found instance template with uri '${uris[0]}'`);
         return uris[0];
     });
 }

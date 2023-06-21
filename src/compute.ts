@@ -1,3 +1,4 @@
+import * as core from "@actions/core"
 import { compute_v1 as computeV1 } from "googleapis"
 import * as gcloud from "@google-github-actions/setup-cloud-sdk"
 
@@ -7,6 +8,8 @@ export async function getInstanceTemplateUrl(
   pattern: string,
   project: string,
 ): Promise<string> {
+  core.info(`Looking for instance template '${pattern}'`)
+
   const uris: string[] = await gcloud.gcloudRunJSON([
     "compute",
     "instance-templates",
@@ -21,6 +24,8 @@ export async function getInstanceTemplateUrl(
   if (uris.length === 0) {
     throw new Error("No instance templates found")
   }
+
+  core.info(`Found instance template with uri '${uris[0]}'`)
 
   return uris[0]
 }
