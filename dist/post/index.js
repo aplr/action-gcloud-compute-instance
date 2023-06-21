@@ -33410,7 +33410,7 @@ function getInstanceTemplateUrl(pattern, project) {
             `name~'${pattern}'`,
             "--uri",
         ]);
-        core.info(`Found uris: ${JSON.stringify(uris)}.`);
+        core.debug(`Found uris: ${JSON.stringify(uris)}.`);
         if (uris.length === 0) {
             throw new Error("No instance templates found");
         }
