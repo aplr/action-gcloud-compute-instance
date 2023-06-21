@@ -1,7 +1,7 @@
 # action-gcloud-compute-instance
 
 The `action-gcloud-compute-instance` GitHub Action provisions a Google
-[Compute Engine][cloud-run] instance. Currently, it can create instances
+[Compute Engine][compute-engine] instance. Currently, it can create instances
 only from existing instance templates, however, this can be extended to
 arbitrary instances in the future. After successful provisioning, the
 instance name as well as it's IP is available as a GitHub Actions output
