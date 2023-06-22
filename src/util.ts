@@ -2,6 +2,7 @@ import slugify from "slugify"
 
 export const createInstanceName = (
   prefix: string,
+  owner: string,
   repo: string,
   runId: number,
-) => [prefix, slugify(repo), runId].join("-")
+) => slugify([prefix, owner, repo, runId].join("-"))

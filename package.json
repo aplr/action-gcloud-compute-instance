@@ -1,6 +1,6 @@
 {
   "name": "@aplr/action-gcloud-compute-instance",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "description": "TypeScript template action",
   "main": "lib/main.js",

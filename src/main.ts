@@ -49,6 +49,7 @@ async function run(): Promise<void> {
     // generate an instance name based on prefix and run id
     const instanceName = createInstanceName(
       config.namePrefix,
+      github.context.repo.owner,
       github.context.repo.repo,
       github.context.runId,
     )

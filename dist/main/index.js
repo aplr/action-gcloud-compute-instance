@@ -44537,7 +44537,7 @@ function run() {
             // get the instance template name
             const templateUrl = yield core.group("Retrieve Instance Template", () => (0, compute_1.getInstanceTemplateUrl)(config.sourceInstanceTemplate, config.project));
             // generate an instance name based on prefix and run id
-            const instanceName = (0, util_1.createInstanceName)(config.namePrefix, github.context.repo.repo, github.context.runId);
+            const instanceName = (0, util_1.createInstanceName)(config.namePrefix, github.context.repo.owner, github.context.repo.repo, github.context.runId);
             core.info(`Creating instance ${instanceName} from template ${templateUrl}`);
             // create the instance, wait for it to be ready or skip if async was requested
             const instance = yield core.group("Create Instance", () => (0, compute_1.createInstance)(instanceName, templateUrl, config.project, config.zone));
@@ -44578,7 +44578,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createInstanceName = void 0;
 const slugify_1 = __importDefault(__nccwpck_require__(9481));
-const createInstanceName = (prefix, repo, runId) => [prefix, (0, slugify_1.default)(repo), runId].join("-");
+const createInstanceName = (prefix, owner, repo, runId) => (0, slugify_1.default)([prefix, owner, repo, runId].join("-"));
 exports.createInstanceName = createInstanceName;
 
 
@@ -44764,7 +44764,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.6","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test","prepare":"husky install"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","husky":"^8.0.0","jest":"29.5.0","js-yaml":"4.1.0","lint-staged":"^13.2.2","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3"},"lint-staged":{"*.js":"eslint --cache --fix","*.ts":"eslint --cache --fix"}}');
+module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.7","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test","prepare":"husky install"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","husky":"^8.0.0","jest":"29.5.0","js-yaml":"4.1.0","lint-staged":"^13.2.2","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3"},"lint-staged":{"*.js":"eslint --cache --fix","*.ts":"eslint --cache --fix"}}');
 
 /***/ })
 
