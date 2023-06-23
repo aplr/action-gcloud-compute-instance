@@ -11,26 +11,24 @@ function getInstanceState(): Instance | undefined {
 }
 
 async function run(): Promise<void> {
+  const shouldAutoDelete = core.getState("auto-delete") === "true"
+  const instanceState = getInstanceState()
+
+  if (!shouldAutoDelete) {
+    core.info("auto-delete disabled, instance will not be deleted")
+    return
+  }
+
+  if (!instanceState) {
+    core.info("no instance created, nothing to delete")
+    return
+  }
+
   try {
-    const shouldAutoDelete = core.getState("auto-delete") === "true"
-    const instanceState = getInstanceState()
-
-    if (!shouldAutoDelete) {
-      core.info("auto-delete disabled, instance will not be deleted")
-      return
-    }
-
-    if (!instanceState) {
-      core.info("no instance created, nothing to delete")
-      return
-    }
-
     core.group("Delete Instance", () => deleteInstance(instanceState))
   } catch (err) {
     const msg = utils.errorMessage(err)
-    core.setFailed(
-      `aplr/actions-gcloud-compute-instance post failed with ${msg}`,
-    )
+    core.error(`aplr/actions-gcloud-compute-instance post failed with ${msg}`)
   }
 }
 

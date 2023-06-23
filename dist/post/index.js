@@ -33518,22 +33518,22 @@ function getInstanceState() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
+        const shouldAutoDelete = core.getState("auto-delete") === "true";
+        const instanceState = getInstanceState();
+        if (!shouldAutoDelete) {
+            core.info("auto-delete disabled, instance will not be deleted");
+            return;
+        }
+        if (!instanceState) {
+            core.info("no instance created, nothing to delete");
+            return;
+        }
         try {
-            const shouldAutoDelete = core.getState("auto-delete") === "true";
-            const instanceState = getInstanceState();
-            if (!shouldAutoDelete) {
-                core.info("auto-delete disabled, instance will not be deleted");
-                return;
-            }
-            if (!instanceState) {
-                core.info("no instance created, nothing to delete");
-                return;
-            }
             core.group("Delete Instance", () => (0, compute_1.deleteInstance)(instanceState));
         }
         catch (err) {
             const msg = utils.errorMessage(err);
-            core.setFailed(`aplr/actions-gcloud-compute-instance post failed with ${msg}`);
+            core.error(`aplr/actions-gcloud-compute-instance post failed with ${msg}`);
         }
     });
 }

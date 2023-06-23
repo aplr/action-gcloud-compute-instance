@@ -29,6 +29,25 @@ async function ensureGcloud(): Promise<void> {
   }
 }
 
+async function createInstanceWithLogging(
+  instanceName: string,
+  templateUrl: string,
+  project: string,
+  zone: string,
+) {
+  try {
+    core.info(
+      `Creating instance ${instanceName} from template ${templateUrl}...`,
+    )
+    return await createInstance(instanceName, templateUrl, project, zone)
+  } catch (err) {
+    core.warning(
+      `Failed to create instance ${instanceName} from template ${templateUrl}`,
+    )
+    throw err
+  }
+}
+
 async function createInstanceWithRetry(
   instanceName: string,
   templateUrl: string,
@@ -37,7 +56,7 @@ async function createInstanceWithRetry(
   numOfAttempts: number,
 ): Promise<Instance> {
   return await backOff(
-    () => createInstance(instanceName, templateUrl, project, zone),
+    () => createInstanceWithLogging(instanceName, templateUrl, project, zone),
     { jitter: "full", startingDelay: 5_000, maxDelay: 300_000, numOfAttempts },
   )
 }
@@ -69,7 +88,18 @@ async function run(): Promise<void> {
       github.context.runId,
     )
 
-    core.info(`Creating instance ${instanceName} from template ${templateUrl}`)
+    // We set the instance state ahead of creating the instance. If the action
+    // is interrupted while creating the instance, we still want to be able to
+    // delete the instance, if it was created.
+
+    // tell post to tear-down instance if requested
+    core.saveState("auto-delete", config.autoDelete ? "true" : "false")
+    // save instance state for post
+    core.saveState("instance", {
+      name: instanceName,
+      project: config.project,
+      zone: config.zone,
+    })
 
     // create the instance, wait for it to be ready or skip if async was requested
     const instance = await core.group("Create Instance", () =>
@@ -87,15 +117,6 @@ async function run(): Promise<void> {
     core.setOutput("instance_ip", instance.ip)
 
     core.info(`Instance ${instance.name} created with IP ${instance.ip}`)
-
-    // tell post to tear-down instance if requested
-    core.saveState("auto-delete", config.autoDelete ? "true" : "false")
-    // save instance state for post
-    core.saveState("instance", {
-      name: instanceName,
-      project: config.project,
-      zone: config.zone,
-    })
   } catch (err) {
     const msg = utils.errorMessage(err)
     core.setFailed(`aplr/actions-gcloud-compute-instance failed with ${msg}`)
