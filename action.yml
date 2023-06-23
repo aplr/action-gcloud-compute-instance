@@ -40,7 +40,7 @@ inputs:
       Whether provisioning an instance should be retried on failure. If set
       to true, the action will retry up to `retry_count` times before failing.
     required: false
-    default: "true"
+    default: "false"
   retry_count:
     description: |-
       Number of times to retry provisioning an instance on failure.
