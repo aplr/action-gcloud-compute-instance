@@ -35221,6 +35221,417 @@ exports.Deprecation = Deprecation;
 
 /***/ }),
 
+/***/ 3183:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var options_1 = __nccwpck_require__(6666);
+var delay_factory_1 = __nccwpck_require__(8348);
+function backOff(request, options) {
+    if (options === void 0) { options = {}; }
+    return __awaiter(this, void 0, void 0, function () {
+        var sanitizedOptions, backOff;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    sanitizedOptions = options_1.getSanitizedOptions(options);
+                    backOff = new BackOff(request, sanitizedOptions);
+                    return [4 /*yield*/, backOff.execute()];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+}
+exports.backOff = backOff;
+var BackOff = /** @class */ (function () {
+    function BackOff(request, options) {
+        this.request = request;
+        this.options = options;
+        this.attemptNumber = 0;
+    }
+    BackOff.prototype.execute = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var e_1, shouldRetry;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!!this.attemptLimitReached) return [3 /*break*/, 7];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 6]);
+                        return [4 /*yield*/, this.applyDelay()];
+                    case 2:
+                        _a.sent();
+                        return [4 /*yield*/, this.request()];
+                    case 3: return [2 /*return*/, _a.sent()];
+                    case 4:
+                        e_1 = _a.sent();
+                        this.attemptNumber++;
+                        return [4 /*yield*/, this.options.retry(e_1, this.attemptNumber)];
+                    case 5:
+                        shouldRetry = _a.sent();
+                        if (!shouldRetry || this.attemptLimitReached) {
+                            throw e_1;
+                        }
+                        return [3 /*break*/, 6];
+                    case 6: return [3 /*break*/, 0];
+                    case 7: throw new Error("Something went wrong.");
+                }
+            });
+        });
+    };
+    Object.defineProperty(BackOff.prototype, "attemptLimitReached", {
+        get: function () {
+            return this.attemptNumber >= this.options.numOfAttempts;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BackOff.prototype.applyDelay = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var delay;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        delay = delay_factory_1.DelayFactory(this.options, this.attemptNumber);
+                        return [4 /*yield*/, delay.apply()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return BackOff;
+}());
+//# sourceMappingURL=backoff.js.map
+
+/***/ }),
+
+/***/ 5710:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var delay_base_1 = __nccwpck_require__(7741);
+var AlwaysDelay = /** @class */ (function (_super) {
+    __extends(AlwaysDelay, _super);
+    function AlwaysDelay() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return AlwaysDelay;
+}(delay_base_1.Delay));
+exports.AlwaysDelay = AlwaysDelay;
+//# sourceMappingURL=always.delay.js.map
+
+/***/ }),
+
+/***/ 7741:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var jitter_factory_1 = __nccwpck_require__(5229);
+var Delay = /** @class */ (function () {
+    function Delay(options) {
+        this.options = options;
+        this.attempt = 0;
+    }
+    Delay.prototype.apply = function () {
+        var _this = this;
+        return new Promise(function (resolve) { return setTimeout(resolve, _this.jitteredDelay); });
+    };
+    Delay.prototype.setAttemptNumber = function (attempt) {
+        this.attempt = attempt;
+    };
+    Object.defineProperty(Delay.prototype, "jitteredDelay", {
+        get: function () {
+            var jitter = jitter_factory_1.JitterFactory(this.options);
+            return jitter(this.delay);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Delay.prototype, "delay", {
+        get: function () {
+            var constant = this.options.startingDelay;
+            var base = this.options.timeMultiple;
+            var power = this.numOfDelayedAttempts;
+            var delay = constant * Math.pow(base, power);
+            return Math.min(delay, this.options.maxDelay);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Delay.prototype, "numOfDelayedAttempts", {
+        get: function () {
+            return this.attempt;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Delay;
+}());
+exports.Delay = Delay;
+//# sourceMappingURL=delay.base.js.map
+
+/***/ }),
+
+/***/ 8348:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var skip_first_delay_1 = __nccwpck_require__(4317);
+var always_delay_1 = __nccwpck_require__(5710);
+function DelayFactory(options, attempt) {
+    var delay = initDelayClass(options);
+    delay.setAttemptNumber(attempt);
+    return delay;
+}
+exports.DelayFactory = DelayFactory;
+function initDelayClass(options) {
+    if (!options.delayFirstAttempt) {
+        return new skip_first_delay_1.SkipFirstDelay(options);
+    }
+    return new always_delay_1.AlwaysDelay(options);
+}
+//# sourceMappingURL=delay.factory.js.map
+
+/***/ }),
+
+/***/ 4317:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var delay_base_1 = __nccwpck_require__(7741);
+var SkipFirstDelay = /** @class */ (function (_super) {
+    __extends(SkipFirstDelay, _super);
+    function SkipFirstDelay() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SkipFirstDelay.prototype.apply = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.isFirstAttempt ? true : _super.prototype.apply.call(this)];
+            });
+        });
+    };
+    Object.defineProperty(SkipFirstDelay.prototype, "isFirstAttempt", {
+        get: function () {
+            return this.attempt === 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SkipFirstDelay.prototype, "numOfDelayedAttempts", {
+        get: function () {
+            return this.attempt - 1;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return SkipFirstDelay;
+}(delay_base_1.Delay));
+exports.SkipFirstDelay = SkipFirstDelay;
+//# sourceMappingURL=skip-first.delay.js.map
+
+/***/ }),
+
+/***/ 8571:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+function fullJitter(delay) {
+    var jitteredDelay = Math.random() * delay;
+    return Math.round(jitteredDelay);
+}
+exports.fullJitter = fullJitter;
+//# sourceMappingURL=full.jitter.js.map
+
+/***/ }),
+
+/***/ 5229:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var full_jitter_1 = __nccwpck_require__(8571);
+var no_jitter_1 = __nccwpck_require__(2585);
+function JitterFactory(options) {
+    switch (options.jitter) {
+        case "full":
+            return full_jitter_1.fullJitter;
+        case "none":
+        default:
+            return no_jitter_1.noJitter;
+    }
+}
+exports.JitterFactory = JitterFactory;
+//# sourceMappingURL=jitter.factory.js.map
+
+/***/ }),
+
+/***/ 2585:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+function noJitter(delay) {
+    return delay;
+}
+exports.noJitter = noJitter;
+//# sourceMappingURL=no.jitter.js.map
+
+/***/ }),
+
+/***/ 6666:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var defaultOptions = {
+    delayFirstAttempt: false,
+    jitter: "none",
+    maxDelay: Infinity,
+    numOfAttempts: 10,
+    retry: function () { return true; },
+    startingDelay: 100,
+    timeMultiple: 2
+};
+function getSanitizedOptions(options) {
+    var sanitized = __assign(__assign({}, defaultOptions), options);
+    if (sanitized.numOfAttempts < 1) {
+        sanitized.numOfAttempts = 1;
+    }
+    return sanitized;
+}
+exports.getSanitizedOptions = getSanitizedOptions;
+//# sourceMappingURL=options.js.map
+
+/***/ }),
+
 /***/ 3287:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -44422,6 +44833,8 @@ const configSchema = zod_1.default.object({
     project: zod_1.default.string().nonempty(),
     sourceInstanceTemplate: zod_1.default.string(),
     autoDelete: zod_1.default.boolean().optional().default(true),
+    retryOnFailure: zod_1.default.boolean().optional().default(false),
+    retryCount: zod_1.default.number().optional().default(5),
     // waitForInstance: zod.boolean().optional().default(true),
 });
 function getConfig() {
@@ -44443,6 +44856,11 @@ function getActionInputs() {
             required: true,
         }),
         autoDelete: (_c = core.getBooleanInput("auto_delete", { required: false })) !== null && _c !== void 0 ? _c : undefined,
+        retryOnFailure: core.getBooleanInput("retry_on_failure", {
+            required: false,
+        }),
+        // TODO: `parseFloat` might be error-prone :)
+        retryCount: parseFloat(core.getInput("retry_count", { required: false })),
         // waitForInstance: core.getBooleanInput("wait_for_instance", {
         //   required: false,
         // }),
@@ -44512,6 +44930,7 @@ const gcloud = __importStar(__nccwpck_require__(6186));
 const config_1 = __nccwpck_require__(6373);
 const util_1 = __nccwpck_require__(2629);
 const compute_1 = __nccwpck_require__(2294);
+const exponential_backoff_1 = __nccwpck_require__(3183);
 // Do not listen to the linter - this can NOT be rewritten as an ES6 import statement.
 // eslint-disable-next-line import/no-commonjs,@typescript-eslint/no-var-requires
 const { version: appVersion } = __nccwpck_require__(4147);
@@ -44524,6 +44943,11 @@ function ensureGcloud() {
         if (!authenticated) {
             throw new Error("Not authenticated with Google Cloud Platform. Authenticate using @google-github-actions/auth.");
         }
+    });
+}
+function createInstanceWithRetry(instanceName, templateUrl, project, zone, numOfAttempts) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, exponential_backoff_1.backOff)(() => (0, compute_1.createInstance)(instanceName, templateUrl, project, zone), { jitter: "full", startingDelay: 5000, maxDelay: 300000, numOfAttempts });
     });
 }
 function run() {
@@ -44540,7 +44964,7 @@ function run() {
             const instanceName = (0, util_1.createInstanceName)(config.namePrefix, github.context.repo.owner, github.context.repo.repo, github.context.runId);
             core.info(`Creating instance ${instanceName} from template ${templateUrl}`);
             // create the instance, wait for it to be ready or skip if async was requested
-            const instance = yield core.group("Create Instance", () => (0, compute_1.createInstance)(instanceName, templateUrl, config.project, config.zone));
+            const instance = yield core.group("Create Instance", () => createInstanceWithRetry(instanceName, templateUrl, config.project, config.zone, config.retryOnFailure ? config.retryCount : 1));
             // add instance details to output: ip, name, ...
             core.setOutput("instance_name", instance.name);
             core.setOutput("instance_ip", instance.ip);
@@ -44764,7 +45188,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.7","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test","prepare":"husky install"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","husky":"^8.0.0","jest":"29.5.0","js-yaml":"4.1.0","lint-staged":"^13.2.2","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3"},"lint-staged":{"*.js":"eslint --cache --fix","*.ts":"eslint --cache --fix"}}');
+module.exports = JSON.parse('{"name":"@aplr/action-gcloud-compute-instance","version":"0.0.7","private":true,"description":"TypeScript template action","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test","prepare":"husky install"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-gcloud-compute-instance.git"},"keywords":["actions","github","gcloud","gcp","compute","vm"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","@google-github-actions/setup-cloud-sdk":"1.1.2","exponential-backoff":"^3.1.1","slugify":"1.6.6","zod":"3.21.4"},"devDependencies":{"@types/node":"20.3.1","@typescript-eslint/parser":"5.60.0","@vercel/ncc":"0.36.1","eslint":"8.43.0","eslint-plugin-github":"4.8.0","eslint-plugin-jest":"27.2.2","eslint-plugin-prettier":"4.2.1","googleapis":"118.0.0","husky":"^8.0.0","jest":"29.5.0","js-yaml":"4.1.0","lint-staged":"^13.2.2","prettier":"2.8.8","ts-jest":"29.1.0","typescript":"5.1.3"},"lint-staged":{"*.js":"eslint --cache --fix","*.ts":"eslint --cache --fix"}}');
 
 /***/ })
 

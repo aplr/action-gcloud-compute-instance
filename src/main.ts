@@ -7,6 +7,8 @@ import * as gcloud from "@google-github-actions/setup-cloud-sdk"
 import { getConfig } from "./config"
 import { createInstanceName } from "./util"
 import { createInstance, getInstanceTemplateUrl } from "./compute"
+import { backOff } from "exponential-backoff"
+import { Instance } from "./shared"
 
 // Do not listen to the linter - this can NOT be rewritten as an ES6 import statement.
 // eslint-disable-next-line import/no-commonjs,@typescript-eslint/no-var-requires
@@ -25,6 +27,19 @@ async function ensureGcloud(): Promise<void> {
       "Not authenticated with Google Cloud Platform. Authenticate using @google-github-actions/auth.",
     )
   }
+}
+
+async function createInstanceWithRetry(
+  instanceName: string,
+  templateUrl: string,
+  project: string,
+  zone: string,
+  numOfAttempts: number,
+): Promise<Instance> {
+  return await backOff(
+    () => createInstance(instanceName, templateUrl, project, zone),
+    { jitter: "full", startingDelay: 5_000, maxDelay: 300_000, numOfAttempts },
+  )
 }
 
 async function run(): Promise<void> {
@@ -58,7 +73,13 @@ async function run(): Promise<void> {
 
     // create the instance, wait for it to be ready or skip if async was requested
     const instance = await core.group("Create Instance", () =>
-      createInstance(instanceName, templateUrl, config.project, config.zone),
+      createInstanceWithRetry(
+        instanceName,
+        templateUrl,
+        config.project,
+        config.zone,
+        config.retryOnFailure ? config.retryCount : 1,
+      ),
     )
 
     // add instance details to output: ip, name, ...

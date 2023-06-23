@@ -35,6 +35,17 @@ inputs:
       current github actions run finishes.
     required: false
     default: "true"
+  retry_on_failure:
+    description: |-
+      Whether provisioning an instance should be retried on failure. If set
+      to true, the action will retry up to `retry_count` times before failing.
+    required: false
+    default: "true"
+  retry_count:
+    description: |-
+      Number of times to retry provisioning an instance on failure.
+    required: false
+    default: "5"
   # wait_for_instance:
   #   description: |-
   #     Whether the action should wait for the VM to be in the RUNNING

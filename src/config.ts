@@ -14,6 +14,8 @@ const configSchema = zod.object({
   project: zod.string().nonempty(),
   sourceInstanceTemplate: zod.string(),
   autoDelete: zod.boolean().optional().default(true),
+  retryOnFailure: zod.boolean().optional().default(false),
+  retryCount: zod.number().optional().default(5),
   // waitForInstance: zod.boolean().optional().default(true),
 })
 
@@ -52,6 +54,11 @@ function getActionInputs(): Partial<Config> {
     }),
     autoDelete:
       core.getBooleanInput("auto_delete", { required: false }) ?? undefined,
+    retryOnFailure: core.getBooleanInput("retry_on_failure", {
+      required: false,
+    }),
+    // TODO: `parseFloat` might be error-prone :)
+    retryCount: parseFloat(core.getInput("retry_count", { required: false })),
     // waitForInstance: core.getBooleanInput("wait_for_instance", {
     //   required: false,
     // }),
