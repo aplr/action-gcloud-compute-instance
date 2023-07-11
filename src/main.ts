@@ -29,7 +29,7 @@ async function ensureGcloud(): Promise<void> {
   }
 }
 
-async function createInstanceWithLogging(
+async function createInstanceLogged(
   instanceName: string,
   templateUrl: string,
   project: string,
@@ -56,8 +56,14 @@ async function createInstanceWithRetry(
   numOfAttempts: number,
 ): Promise<Instance> {
   return await backOff(
-    () => createInstanceWithLogging(instanceName, templateUrl, project, zone),
-    { jitter: "full", startingDelay: 5_000, maxDelay: 300_000, numOfAttempts },
+    () => createInstanceLogged(instanceName, templateUrl, project, zone),
+    {
+      jitter: "full",
+      startingDelay: 10_000,
+      maxDelay: 300_000,
+      timeMultiple: 3,
+      numOfAttempts,
+    },
   )
 }
 

@@ -45,7 +45,7 @@ inputs:
     description: |-
       Number of times to retry provisioning an instance on failure.
     required: false
-    default: "5"
+    default: "10"
   # wait_for_instance:
   #   description: |-
   #     Whether the action should wait for the VM to be in the RUNNING
