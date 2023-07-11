@@ -44945,7 +44945,7 @@ function ensureGcloud() {
         }
     });
 }
-function createInstanceWithLogging(instanceName, templateUrl, project, zone) {
+function createInstanceLogged(instanceName, templateUrl, project, zone) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.info(`Creating instance ${instanceName} from template ${templateUrl}...`);
@@ -44959,7 +44959,13 @@ function createInstanceWithLogging(instanceName, templateUrl, project, zone) {
 }
 function createInstanceWithRetry(instanceName, templateUrl, project, zone, numOfAttempts) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, exponential_backoff_1.backOff)(() => createInstanceWithLogging(instanceName, templateUrl, project, zone), { jitter: "full", startingDelay: 5000, maxDelay: 300000, numOfAttempts });
+        return yield (0, exponential_backoff_1.backOff)(() => createInstanceLogged(instanceName, templateUrl, project, zone), {
+            jitter: "full",
+            startingDelay: 10000,
+            maxDelay: 300000,
+            timeMultiple: 3,
+            numOfAttempts,
+        });
     });
 }
 function run() {
